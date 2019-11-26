@@ -15,4 +15,10 @@ export default StyleSheet.create({
     borderRadius: 50 / 2,
     margin: 8,
   },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    paddingHorizontal: 12,
+  },
 });

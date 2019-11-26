@@ -9,11 +9,17 @@ import {
   TextInput,
 } from 'react-native';
 import styles from './RootScreenStyle';
+import _ from 'lodash';
 
 class RootScreen extends Component {
   constructor(props) {
     super(props);
-    this.state = {isLoading: true};
+    this.state = {
+      isLoading: true,
+      dataSource: [],
+      completeSource: [],
+      searchValue: '',
+    };
   }
 
   componentDidMount() {
@@ -24,6 +30,7 @@ class RootScreen extends Component {
           {
             isLoading: false,
             dataSource: responseJson,
+            completeSource: responseJson,
           },
           function() {},
         );
@@ -40,6 +47,19 @@ class RootScreen extends Component {
     </View>
   );
 
+  onChangeText = text => {
+    this.setState({searchValue: text});
+    const completeSource = this.state.completeSource;
+    if (_.isEmpty(text)) {
+      this.setState({dataSource: completeSource});
+    } else {
+      let filterData = completeSource.filter(item =>
+        item.login.toLowerCase().includes(text.toLowerCase()),
+      );
+      this.setState({dataSource: filterData});
+    }
+  };
+
   render() {
     if (this.state.isLoading) {
       return (
@@ -52,20 +72,16 @@ class RootScreen extends Component {
     return (
       <SafeAreaView>
         <TextInput
-          style={{
-            height: 40,
-            borderColor: 'gray',
-            borderWidth: 1,
-            paddingHorizontal: 16,
-          }}
-          // onChangeText={text => onChangeText(text)}
-          // value={value}
+          style={styles.input}
+          onChangeText={text => this.onChangeText(text)}
+          value={this.state.searchValue}
+          placeholder={'Search'}
         />
         <View style={styles.listContainer}>
           <FlatList
             data={this.state.dataSource}
             renderItem={this.renderItem}
-            keyExtractor={({id}, index) => id}
+            keyExtractor={({login}, index) => login}
           />
         </View>
       </SafeAreaView>
